@@ -1,5 +1,28 @@
 export type OrderStatus = 'RECEBIDO' | 'EM_PREPARO' | 'SAIU_PARA_ENTREGA' | 'ENTREGUE' | 'CANCELADO';
 
+export type ProductCategory = 'HAMBURGUER' | 'CACHORRO_QUENTE' | 'SANDUICHE' | 'BEBIDA' | 'SOBREMESA';
+
+export interface Product {
+  id: number;
+  name: string;
+  description?: string;
+  price: number;
+  category: ProductCategory;
+  categoryDisplayName?: string;
+  imageUrl?: string;
+  available: boolean;
+  createdAt?: string;
+}
+
+export interface CreateProductPayload {
+  name: string;
+  description?: string;
+  price: number;
+  category: ProductCategory;
+  imageUrl?: string;
+  available?: boolean;
+}
+
 export interface User {
   userId: number;
   name: string;
