@@ -29,36 +29,36 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({ orders }) => {
       title: 'Total de Pedidos',
       value: totalOrders,
       icon: ShoppingBag,
-      color: 'text-slate-600 dark:text-slate-300',
+      color: 'text-slate-700 dark:text-slate-300',
       bgColor: 'bg-slate-100 dark:bg-zinc-800',
     },
     {
       title: 'Recebidos',
       value: recebidos,
       icon: Clock,
-      color: 'text-sky-600 dark:text-sky-400',
-      bgColor: 'bg-sky-50 dark:bg-sky-950/50',
+      color: 'text-sky-700 dark:text-sky-400',
+      bgColor: 'bg-sky-100 dark:bg-sky-950/60',
     },
     {
       title: 'Em Preparo',
       value: emPreparo,
       icon: ChefHat,
-      color: 'text-amber-600 dark:text-amber-400',
-      bgColor: 'bg-amber-50 dark:bg-amber-950/50',
+      color: 'text-amber-800 dark:text-amber-400',
+      bgColor: 'bg-amber-100 dark:bg-amber-950/60',
     },
     {
       title: 'Saiu p/ Entrega',
       value: saiuParaEntrega,
       icon: Bike,
-      color: 'text-indigo-600 dark:text-indigo-400',
-      bgColor: 'bg-indigo-50 dark:bg-indigo-950/50',
+      color: 'text-indigo-700 dark:text-indigo-400',
+      bgColor: 'bg-indigo-100 dark:bg-indigo-950/60',
     },
     {
       title: 'Concluídos',
       value: entregues,
       icon: CheckCircle2,
-      color: 'text-emerald-600 dark:text-emerald-400',
-      bgColor: 'bg-emerald-50 dark:bg-emerald-950/50',
+      color: 'text-emerald-800 dark:text-emerald-400',
+      bgColor: 'bg-emerald-100 dark:bg-emerald-950/60',
     },
     {
       title: 'Faturamento Total',
@@ -79,14 +79,14 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({ orders }) => {
             className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:border-[#FF5C5C]/40 transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-[var(--text-muted)] truncate">
+              <span className="text-xs font-semibold text-[var(--text-muted)] truncate">
                 {card.title}
               </span>
               <div className={`p-2 rounded-xl ${card.bgColor} ${card.color}`}>
                 <Icon className="w-4 h-4 shrink-0" />
               </div>
             </div>
-            <div className="text-xl font-bold text-[var(--text-main)] truncate mt-1">
+            <div className="text-xl font-extrabold text-[var(--text-main)] truncate mt-1">
               {card.value}
             </div>
           </div>

@@ -16,22 +16,24 @@ import {
   Search,
   Plus,
   LogOut,
-  History,
   Trash2,
   RefreshCw,
   ShoppingBag,
   Filter,
+  UtensilsCrossed,
+  Eye,
 } from 'lucide-react';
 
 import { useAuthStore } from '../stores/useAuthStore';
 import { orderService } from '../services/orderService';
 import type { Order, OrderStatus } from '../types';
-import { StatusBadge, statusConfig } from '../components/StatusBadge';
+import { StatusSelect, statusConfig } from '../components/StatusBadge';
 import { MetricsCards } from '../components/MetricsCards';
 import { Button } from '../components/Button';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { CreateOrderModal } from '../components/CreateOrderModal';
-import { OrderHistoryModal } from '../components/OrderHistoryModal';
+import { OrderDetailsModal } from '../components/OrderDetailsModal';
+import { ProductManagerModal } from '../components/ProductManagerModal';
 
 const columnHelper = createColumnHelper<Order>();
 
@@ -42,7 +44,8 @@ export const Dashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedHistoryOrderId, setSelectedHistoryOrderId] = useState<number | null>(null);
+  const [isProductManagerOpen, setIsProductManagerOpen] = useState(false);
+  const [selectedDetailOrderId, setSelectedDetailOrderId] = useState<number | null>(null);
 
   // Buscar lista de pedidos via TanStack Query
   const {
@@ -84,7 +87,8 @@ export const Dashboard: React.FC = () => {
     },
   });
 
-  const handleDelete = (id: number, customerName: string) => {
+  const handleDelete = (e: React.MouseEvent, id: number, customerName: string) => {
+    e.stopPropagation();
     if (confirm(`Tem certeza que deseja excluir o pedido #${id} de "${customerName}"?`)) {
       deleteOrderMutation.mutate(id);
     }
@@ -103,13 +107,13 @@ export const Dashboard: React.FC = () => {
     });
   }, [orders, selectedStatus, searchTerm]);
 
-  // Colunas da Tabela TanStack Table
+  // Colunas Otimizadas
   const columns = useMemo(
     () => [
       columnHelper.accessor('id', {
         header: 'ID',
         cell: (info) => (
-          <span className="font-mono text-xs font-semibold text-[var(--text-muted)]">
+          <span className="font-mono text-xs font-bold text-[var(--text-muted)]">
             #{info.getValue()}
           </span>
         ),
@@ -119,9 +123,9 @@ export const Dashboard: React.FC = () => {
         cell: (info) => {
           const row = info.row.original;
           return (
-            <div>
-              <div className="font-semibold text-sm text-[var(--text-main)]">{row.customerName}</div>
-              <div className="text-xs text-[var(--text-muted)] truncate max-w-xs" title={row.deliveryAddress}>
+            <div className="min-w-0">
+              <div className="font-semibold text-xs text-[var(--text-main)] truncate">{row.customerName}</div>
+              <div className="text-[11px] text-[var(--text-muted)] truncate max-w-[180px]" title={row.deliveryAddress}>
                 {row.deliveryAddress}
               </div>
             </div>
@@ -129,15 +133,16 @@ export const Dashboard: React.FC = () => {
         },
       }),
       columnHelper.accessor('items', {
-        header: 'Itens',
+        header: 'Itens do Pedido',
         cell: (info) => {
           const items = info.getValue() || [];
+          const totalCount = items.reduce((acc, item) => acc + item.quantity, 0);
           return (
-            <div className="text-xs">
-              <span className="font-medium text-[var(--text-main)]">
-                {items.reduce((acc, item) => acc + item.quantity, 0)} produto(s)
+            <div className="min-w-0">
+              <span className="font-semibold text-xs text-[var(--text-main)]">
+                {totalCount} item(ns)
               </span>
-              <div className="text-[var(--text-muted)] truncate max-w-xs">
+              <div className="text-[11px] text-[var(--text-muted)] truncate max-w-[200px]" title={items.map((i) => `${i.quantity}x ${i.productName}`).join(', ')}>
                 {items.map((i) => `${i.quantity}x ${i.productName}`).join(', ')}
               </div>
             </div>
@@ -145,9 +150,9 @@ export const Dashboard: React.FC = () => {
         },
       }),
       columnHelper.accessor('totalPrice', {
-        header: 'Total (R$)',
+        header: 'Total',
         cell: (info) => (
-          <span className="font-bold text-sm text-[var(--text-main)]">
+          <span className="font-bold text-xs text-[#FF5C5C] whitespace-nowrap">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
               info.getValue() || 0
             )}
@@ -158,42 +163,29 @@ export const Dashboard: React.FC = () => {
         header: 'Status Atual',
         cell: (info) => {
           const order = info.row.original;
-          const isFinalStatus = order.status === 'ENTREGUE' || order.status === 'CANCELADO';
-
           return (
-            <div className="flex items-center gap-2">
-              <StatusBadge status={order.status} />
-
-              {!isFinalStatus && (
-                <select
-                  value={order.status}
-                  onChange={(e) =>
-                    updateStatusMutation.mutate({
-                      id: order.id,
-                      status: e.target.value as OrderStatus,
-                    })
-                  }
-                  disabled={updateStatusMutation.isPending}
-                  className="text-xs rounded-lg border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-main)] p-1 outline-none focus:ring-1 focus:ring-[#FF5C5C] cursor-pointer"
-                >
-                  <option value="RECEBIDO">Alterar ➔ RECEBIDO</option>
-                  <option value="EM_PREPARO">Alterar ➔ EM_PREPARO</option>
-                  <option value="SAIU_PARA_ENTREGA">Alterar ➔ SAIU_PARA_ENTREGA</option>
-                  <option value="ENTREGUE">Alterar ➔ ENTREGUE</option>
-                  <option value="CANCELADO">Alterar ➔ CANCELADO</option>
-                </select>
-              )}
+            <div onClick={(e) => e.stopPropagation()}>
+              <StatusSelect
+                status={order.status}
+                onChangeStatus={(newStatus) =>
+                  updateStatusMutation.mutate({
+                    id: order.id,
+                    status: newStatus,
+                  })
+                }
+                disabled={updateStatusMutation.isPending}
+              />
             </div>
           );
         },
       }),
       columnHelper.accessor('createdAt', {
-        header: 'Data / Hora',
+        header: 'Data/Hora',
         cell: (info) => {
           try {
             return (
-              <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">
-                {format(new Date(info.getValue()), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+              <span className="text-[11px] text-[var(--text-muted)] whitespace-nowrap">
+                {format(new Date(info.getValue()), 'dd/MM/yy HH:mm', { locale: ptBR })}
               </span>
             );
           } catch {
@@ -207,23 +199,23 @@ export const Dashboard: React.FC = () => {
         cell: (info) => {
           const order = info.row.original;
           return (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               <button
                 type="button"
-                onClick={() => setSelectedHistoryOrderId(order.id)}
-                className="p-1.5 rounded-lg border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[#FF5C5C] hover:bg-[var(--bg-card-hover)] transition-all cursor-pointer"
-                title="Ver Histórico / Timeline"
+                onClick={() => setSelectedDetailOrderId(order.id)}
+                className="p-1.5 rounded-lg border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[#FF5C5C] hover:bg-[var(--bg-card-hover)] transition-all cursor-pointer flex items-center gap-1 text-[11px] font-semibold"
+                title="Ver Detalhes e Histórico Completo"
               >
-                <History className="w-4 h-4" />
+                <Eye className="w-3.5 h-3.5 text-[#FF5C5C]" /> Ver Detalhes
               </button>
 
               <button
                 type="button"
-                onClick={() => handleDelete(order.id, order.customerName)}
+                onClick={(e) => handleDelete(e, order.id, order.customerName)}
                 className="p-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-all cursor-pointer"
                 title="Excluir Pedido"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           );
@@ -269,7 +261,7 @@ export const Dashboard: React.FC = () => {
 
       {/* Conteúdo Principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Título e Botão de Novo Pedido */}
+        {/* Título e Botões de Ação */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold text-[var(--text-main)] tracking-tight">
@@ -280,7 +272,7 @@ export const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <Button
               variant="outline"
               onClick={() => refetch()}
@@ -288,6 +280,14 @@ export const Dashboard: React.FC = () => {
               icon={<RefreshCw className="w-4 h-4" />}
             >
               Atualizar
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setIsProductManagerOpen(true)}
+              icon={<UtensilsCrossed className="w-4 h-4 text-[#FF5C5C]" />}
+            >
+              Cardápio / Produtos
             </Button>
 
             <Button
@@ -353,7 +353,7 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Tabela de Pedidos */}
+        {/* Tabela Responsiva com Clique na Linha para Abrir Detalhes */}
         <div className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl overflow-hidden shadow-xs">
           {isLoading ? (
             <div className="p-12 text-center text-[var(--text-muted)] flex flex-col items-center justify-center">
@@ -369,16 +369,16 @@ export const Dashboard: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className="w-full">
+              <table className="w-full text-left border-collapse table-auto">
                 <thead>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr
                       key={headerGroup.id}
-                      className="border-b border-[var(--border-color)] bg-[var(--bg-main)]/60 text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider"
+                      className="border-b border-[var(--border-color)] bg-[var(--bg-main)]/60 text-[var(--text-muted)] text-[11px] font-semibold uppercase tracking-wider"
                     >
                       {headerGroup.headers.map((header) => (
-                        <th key={header.id} className="px-6 py-4">
+                        <th key={header.id} className="px-3.5 py-3">
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                       ))}
@@ -389,10 +389,12 @@ export const Dashboard: React.FC = () => {
                   {table.getRowModel().rows.map((row) => (
                     <tr
                       key={row.id}
-                      className="hover:bg-[var(--bg-card-hover)] transition-colors text-sm"
+                      onClick={() => setSelectedDetailOrderId(row.original.id)}
+                      className="hover:bg-[var(--bg-card-hover)] transition-colors text-xs cursor-pointer group"
+                      title="Clique para ver os detalhes completos do pedido"
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="px-6 py-4">
+                        <td key={cell.id} className="px-3.5 py-3">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
@@ -405,7 +407,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Paginação da Tabela */}
           {filteredOrders.length > 0 && (
-            <div className="px-6 py-4 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+            <div className="px-4 py-3 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
               <span>
                 Exibindo {table.getRowModel().rows.length} de {filteredOrders.length} pedido(s)
               </span>
@@ -440,14 +442,26 @@ export const Dashboard: React.FC = () => {
 
       {/* Modal de Criação de Pedido */}
       {isCreateModalOpen && (
-        <CreateOrderModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+        <CreateOrderModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onOpenProductManager={() => setIsProductManagerOpen(true)}
+        />
       )}
 
-      {/* Modal de Histórico do Pedido */}
-      {selectedHistoryOrderId !== null && (
-        <OrderHistoryModal
-          orderId={selectedHistoryOrderId}
-          onClose={() => setSelectedHistoryOrderId(null)}
+      {/* Modal de Gestão do Cardápio / Produtos */}
+      {isProductManagerOpen && (
+        <ProductManagerModal
+          isOpen={isProductManagerOpen}
+          onClose={() => setIsProductManagerOpen(false)}
+        />
+      )}
+
+      {/* Modal de Detalhes Completos & Histórico do Pedido */}
+      {selectedDetailOrderId !== null && (
+        <OrderDetailsModal
+          orderId={selectedDetailOrderId}
+          onClose={() => setSelectedDetailOrderId(null)}
         />
       )}
     </div>
