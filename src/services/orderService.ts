@@ -1,11 +1,11 @@
-import { api } from './api';
 import type {
-  Order,
   CreateOrderPayload,
-  UpdateOrderStatusPayload,
-  UpdateOrderPayload,
+  Order,
   OrderStatusHistory,
+  UpdateOrderPayload,
+  UpdateOrderStatusPayload,
 } from '../types';
+import { api } from './api';
 
 export const orderService = {
   getAll: async (): Promise<Order[]> => {

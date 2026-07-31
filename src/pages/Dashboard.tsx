@@ -1,39 +1,39 @@
-import React, { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  useReactTable,
+  createColumnHelper,
+  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getSortedRowModel,
   getPaginationRowModel,
-  flexRender,
-  createColumnHelper,
+  getSortedRowModel,
+  useReactTable,
 } from '@tanstack/react-table';
-import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
-  Search,
-  Plus,
-  LogOut,
-  Trash2,
-  RefreshCw,
-  ShoppingBag,
-  Filter,
-  UtensilsCrossed,
   Eye,
+  Filter,
+  LogOut,
+  Plus,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Trash2,
+  UtensilsCrossed,
 } from 'lucide-react';
-
-import { useAuthStore } from '../stores/useAuthStore';
-import { orderService } from '../services/orderService';
-import type { Order, OrderStatus } from '../types';
-import { StatusSelect, statusConfig } from '../components/StatusBadge';
-import { MetricsCards } from '../components/MetricsCards';
+import type React from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '../components/Button';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { CreateOrderModal } from '../components/CreateOrderModal';
+import { MetricsCards } from '../components/MetricsCards';
 import { OrderDetailsModal } from '../components/OrderDetailsModal';
 import { ProductManagerModal } from '../components/ProductManagerModal';
+import { StatusSelect, statusConfig } from '../components/StatusBadge';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { orderService } from '../services/orderService';
+import { useAuthStore } from '../stores/useAuthStore';
+import type { Order, OrderStatus } from '../types';
 
 const columnHelper = createColumnHelper<Order>();
 
@@ -87,12 +87,15 @@ export const Dashboard: React.FC = () => {
     },
   });
 
-  const handleDelete = (e: React.MouseEvent, id: number, customerName: string) => {
-    e.stopPropagation();
-    if (confirm(`Tem certeza que deseja excluir o pedido #${id} de "${customerName}"?`)) {
-      deleteOrderMutation.mutate(id);
-    }
-  };
+  const handleDelete = useCallback(
+    (e: React.MouseEvent, id: number, customerName: string) => {
+      e.stopPropagation();
+      if (confirm(`Tem certeza que deseja excluir o pedido #${id} de "${customerName}"?`)) {
+        deleteOrderMutation.mutate(id);
+      }
+    },
+    [deleteOrderMutation]
+  );
 
   // Filtragem de pedidos
   const filteredOrders = useMemo(() => {
@@ -124,8 +127,13 @@ export const Dashboard: React.FC = () => {
           const row = info.row.original;
           return (
             <div className="min-w-0">
-              <div className="font-semibold text-xs text-[var(--text-main)] truncate">{row.customerName}</div>
-              <div className="text-[11px] text-[var(--text-muted)] truncate max-w-[180px]" title={row.deliveryAddress}>
+              <div className="font-semibold text-xs text-[var(--text-main)] truncate">
+                {row.customerName}
+              </div>
+              <div
+                className="text-[11px] text-[var(--text-muted)] truncate max-w-[180px]"
+                title={row.deliveryAddress}
+              >
                 {row.deliveryAddress}
               </div>
             </div>
@@ -142,7 +150,10 @@ export const Dashboard: React.FC = () => {
               <span className="font-semibold text-xs text-[var(--text-main)]">
                 {totalCount} item(ns)
               </span>
-              <div className="text-[11px] text-[var(--text-muted)] truncate max-w-[200px]" title={items.map((i) => `${i.quantity}x ${i.productName}`).join(', ')}>
+              <div
+                className="text-[11px] text-[var(--text-muted)] truncate max-w-[200px]"
+                title={items.map((i) => `${i.quantity}x ${i.productName}`).join(', ')}
+              >
                 {items.map((i) => `${i.quantity}x ${i.productName}`).join(', ')}
               </div>
             </div>
@@ -222,7 +233,7 @@ export const Dashboard: React.FC = () => {
         },
       }),
     ],
-    [updateStatusMutation]
+    [updateStatusMutation, handleDelete]
   );
 
   const table = useReactTable({
@@ -244,7 +255,11 @@ export const Dashboard: React.FC = () => {
       {/* Header Fixo */}
       <header className="border-b border-[var(--border-color)] bg-[var(--bg-card)] px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-xs">
         <div className="flex items-center gap-3">
-          <img src="/LogoCompleta.png" alt="Foody Delivery Logo" className="h-9 w-auto object-contain" />
+          <img
+            src="/LogoCompleta.png"
+            alt="Foody Delivery Logo"
+            className="h-9 w-auto object-contain"
+          />
         </div>
 
         <div className="flex items-center gap-4">
@@ -363,7 +378,9 @@ export const Dashboard: React.FC = () => {
           ) : filteredOrders.length === 0 ? (
             <div className="p-12 text-center text-[var(--text-muted)] flex flex-col items-center justify-center">
               <ShoppingBag className="w-12 h-12 text-[var(--text-muted)] opacity-50 mb-3" />
-              <p className="text-base font-semibold text-[var(--text-main)]">Nenhum pedido encontrado</p>
+              <p className="text-base font-semibold text-[var(--text-main)]">
+                Nenhum pedido encontrado
+              </p>
               <p className="text-xs text-[var(--text-muted)] mt-1 max-w-sm">
                 Tente ajustar seus filtros de busca ou crie um novo pedido no botão acima.
               </p>

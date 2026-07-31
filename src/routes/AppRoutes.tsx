@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type React from 'react';
+import { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
 import { ThemeProvider } from '../context/ThemeContext';
+import { Dashboard } from '../pages/Dashboard';
+import { Login } from '../pages/Login';
+import { Register } from '../pages/Register';
 import { useAuthStore } from '../stores/useAuthStore';
 import { PrivateRoute } from './PrivateRoute';
 import { PublicRoute } from './PublicRoute';
-import { Login } from '../pages/Login';
-import { Register } from '../pages/Register';
-import { Dashboard } from '../pages/Dashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {

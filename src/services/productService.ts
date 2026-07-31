@@ -1,5 +1,5 @@
+import type { CreateProductPayload, Product, ProductCategory } from '../types';
 import { api } from './api';
-import type { Product, ProductCategory, CreateProductPayload } from '../types';
 
 export const productService = {
   getAll: async (availableOnly = true): Promise<Product[]> => {

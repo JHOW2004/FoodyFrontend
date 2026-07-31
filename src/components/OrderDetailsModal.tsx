@@ -1,20 +1,21 @@
-import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
-  X,
-  ShoppingBag,
-  User as UserIcon,
-  MapPin,
-  History,
+  AlertCircle,
+  ArrowRight,
   Calendar,
   DollarSign,
-  ArrowRight,
-  UserCheck,
+  History,
+  MapPin,
   RefreshCw,
-  AlertCircle,
+  ShoppingBag,
+  UserCheck,
+  User as UserIcon,
+  X,
 } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
 
 import { orderService } from '../services/orderService';
 import type { Order, OrderStatusHistory } from '../types';
@@ -40,10 +41,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, o
   });
 
   // Buscar histórico de auditoria
-  const {
-    data: historyList = [],
-    isLoading: isLoadingHistory,
-  } = useQuery<OrderStatusHistory[]>({
+  const { data: historyList = [], isLoading: isLoadingHistory } = useQuery<OrderStatusHistory[]>({
     queryKey: ['order-history', orderId],
     queryFn: () => orderService.getHistory(orderId),
   });
@@ -68,7 +66,9 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ orderId, o
         ) : isErrorOrder || !order ? (
           <div className="py-12 text-center text-rose-500 flex flex-col items-center justify-center">
             <AlertCircle className="w-10 h-10 mb-2" />
-            <p className="text-sm font-semibold">Não foi possível carregar as informações do pedido.</p>
+            <p className="text-sm font-semibold">
+              Não foi possível carregar as informações do pedido.
+            </p>
             <button
               type="button"
               onClick={() => refetchOrder()}

@@ -1,7 +1,7 @@
-import React from 'react';
-import type { ButtonHTMLAttributes } from 'react';
-import { Loader2 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Loader2 } from 'lucide-react';
+import type React from 'react';
+import type { ButtonHTMLAttributes } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'danger';
@@ -28,8 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
       'bg-[#2E2E2E] hover:bg-[#1E1E1E] text-white focus:ring-[#2E2E2E]/40 dark:bg-zinc-800 dark:hover:bg-zinc-700 active:scale-[0.99]',
     outline:
       'border border-[var(--border-color)] bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-card-hover)] focus:ring-[#FF5C5C]/30',
-    danger:
-      'bg-red-600 hover:bg-red-700 text-white focus:ring-red-600/40 active:scale-[0.99]',
+    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-600/40 active:scale-[0.99]',
   };
 
   return (

@@ -1,7 +1,8 @@
-import React, { forwardRef, useState } from 'react';
-import type { InputHTMLAttributes } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Eye, EyeOff } from 'lucide-react';
+import type React from 'react';
+import type { InputHTMLAttributes } from 'react';
+import { forwardRef, useState } from 'react';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -14,11 +15,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const [showPassword, setShowPassword] = useState(false);
     const isPasswordType = type === 'password';
 
-    const inputType = isPasswordType
-      ? showPassword
-        ? 'text'
-        : 'password'
-      : type;
+    const inputType = isPasswordType ? (showPassword ? 'text' : 'password') : type;
 
     return (
       <div className="w-full flex flex-col gap-1.5">
@@ -59,11 +56,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               title={showPassword ? 'Ocultar senha' : 'Exibir senha'}
               aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
             >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           )}
         </div>

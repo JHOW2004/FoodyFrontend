@@ -1,7 +1,7 @@
-import React from 'react';
 import { clsx } from 'clsx';
+import { Bike, CheckCircle2, ChefHat, ChevronDown, Clock, XCircle } from 'lucide-react';
+import type React from 'react';
 import type { OrderStatus } from '../types';
-import { Clock, ChefHat, Bike, CheckCircle2, XCircle, ChevronDown } from 'lucide-react';
 
 interface StatusBadgeProps {
   status: OrderStatus;

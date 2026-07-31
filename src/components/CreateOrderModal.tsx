@@ -1,17 +1,26 @@
-import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  AlertCircle,
+  MapPin,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Trash2,
+  User as UserIcon,
+  X,
+} from 'lucide-react';
+import React from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { X, Plus, Minus, Trash2, ShoppingBag, MapPin, User as UserIcon, AlertCircle } from 'lucide-react';
+import { z } from 'zod';
 
 import { orderService } from '../services/orderService';
 import { productService } from '../services/productService';
 import type { Product, ProductCategory } from '../types';
-import { categoryLabels } from './ProductManagerModal';
-import { Input } from './Input';
 import { Button } from './Button';
+import { Input } from './Input';
+import { categoryLabels } from './ProductManagerModal';
 
 const itemSchema = z.object({
   productName: z.string().min(1, 'Selecione um produto do cardápio'),
@@ -349,7 +358,9 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
             {/* Total Geral e Ações */}
             <div className="border-t border-[var(--border-color)] pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
-                <span className="text-xs text-[var(--text-muted)] block">Valor Total do Pedido</span>
+                <span className="text-xs text-[var(--text-muted)] block">
+                  Valor Total do Pedido
+                </span>
                 <span className="text-xl font-bold text-[#FF5C5C]">
                   {new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -359,7 +370,12 @@ export const CreateOrderModal: React.FC<CreateOrderModalProps> = ({
               </div>
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
-                <Button type="button" variant="outline" onClick={handleCloseModal} className="w-1/2 sm:w-auto">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCloseModal}
+                  className="w-1/2 sm:w-auto"
+                >
                   Cancelar
                 </Button>
 

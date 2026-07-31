@@ -1,5 +1,5 @@
-import { api } from './api';
 import type { AuthResponse } from '../types';
+import { api } from './api';
 
 export interface LoginParams {
   email: string;
