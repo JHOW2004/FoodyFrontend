@@ -1,6 +1,16 @@
-export type OrderStatus = 'RECEBIDO' | 'EM_PREPARO' | 'SAIU_PARA_ENTREGA' | 'ENTREGUE' | 'CANCELADO';
+export type OrderStatus =
+  | 'RECEBIDO'
+  | 'EM_PREPARO'
+  | 'SAIU_PARA_ENTREGA'
+  | 'ENTREGUE'
+  | 'CANCELADO';
 
-export type ProductCategory = 'HAMBURGUER' | 'CACHORRO_QUENTE' | 'SANDUICHE' | 'BEBIDA' | 'SOBREMESA';
+export type ProductCategory =
+  | 'HAMBURGUER'
+  | 'CACHORRO_QUENTE'
+  | 'SANDUICHE'
+  | 'BEBIDA'
+  | 'SOBREMESA';
 
 export interface Product {
   id: number;

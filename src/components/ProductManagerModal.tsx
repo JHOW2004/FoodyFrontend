@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { CheckCircle2, Edit2, Plus, RefreshCw, Trash2, UtensilsCrossed, X } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { X, Plus, Trash2, Edit2, UtensilsCrossed, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { z } from 'zod';
 
 import { productService } from '../services/productService';
 import type { Product, ProductCategory } from '../types';
-import { Input } from './Input';
 import { Button } from './Button';
+import { Input } from './Input';
 
 const productSchema = z.object({
   name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres'),
@@ -183,9 +184,14 @@ export const ProductManagerModal: React.FC<ProductManagerModalProps> = ({ isOpen
         <div className="flex-1 overflow-y-auto pr-1.5 space-y-5">
           {/* Formulário de Criação/Edição */}
           {isFormOpen && (
-            <form onSubmit={handleSubmit(onSubmit)} className="p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--border-color)] space-y-4">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="p-5 rounded-2xl bg-[var(--bg-main)] border border-[var(--border-color)] space-y-4"
+            >
               <h3 className="text-sm font-bold text-[var(--text-main)] border-b border-[var(--border-color)] pb-2">
-                {editingProduct ? `Editar Produto: ${editingProduct.name}` : 'Cadastrar Novo Produto'}
+                {editingProduct
+                  ? `Editar Produto: ${editingProduct.name}`
+                  : 'Cadastrar Novo Produto'}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -245,16 +251,29 @@ export const ProductManagerModal: React.FC<ProductManagerModalProps> = ({ isOpen
                   className="w-4 h-4 rounded text-[#FF5C5C] focus:ring-[#FF5C5C]"
                   {...register('available')}
                 />
-                <label htmlFor="available" className="text-xs font-semibold text-[var(--text-main)] cursor-pointer">
+                <label
+                  htmlFor="available"
+                  className="text-xs font-semibold text-[var(--text-main)] cursor-pointer"
+                >
                   Produto disponível para vendas no cardápio
                 </label>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t border-[var(--border-color)]">
-                <Button type="button" variant="outline" onClick={handleCancelForm} className="text-xs py-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancelForm}
+                  className="text-xs py-2"
+                >
                   Cancelar
                 </Button>
-                <Button type="submit" variant="primary" isLoading={saveMutation.isPending} className="text-xs py-2 px-5">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={saveMutation.isPending}
+                  className="text-xs py-2 px-5"
+                >
                   {editingProduct ? 'Salvar Alterações' : 'Cadastrar Produto'}
                 </Button>
               </div>
@@ -284,7 +303,9 @@ export const ProductManagerModal: React.FC<ProductManagerModalProps> = ({ isOpen
               </div>
             ) : products.length === 0 ? (
               <div className="p-8 text-center border border-[var(--border-color)] rounded-2xl bg-[var(--bg-main)]">
-                <p className="text-sm font-semibold text-[var(--text-main)]">Nenhum produto cadastrado</p>
+                <p className="text-sm font-semibold text-[var(--text-main)]">
+                  Nenhum produto cadastrado
+                </p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
                   Clique no botão "Novo Produto" acima para cadastrar seu primeiro item.
                 </p>

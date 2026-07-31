@@ -1,6 +1,6 @@
-import React from 'react';
+import { Bike, CheckCircle2, ChefHat, Clock, DollarSign, ShoppingBag } from 'lucide-react';
+import type React from 'react';
 import type { Order } from '../types';
-import { ShoppingBag, Clock, ChefHat, Bike, CheckCircle2, DollarSign } from 'lucide-react';
 
 interface MetricsCardsProps {
   orders: Order[];

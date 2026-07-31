@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { Lock, Mail, ShieldCheck, User as UserIcon, UserPlus } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { User as UserIcon, Mail, Lock, UserPlus, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
-
-import { Input } from '../components/Input';
+import { z } from 'zod';
 import { Button } from '../components/Button';
+import { Input } from '../components/Input';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { authService } from '../services/authService';
 import { useAuthStore } from '../stores/useAuthStore';
 
 const registerSchema = z
   .object({
-    name: z
-      .string()
-      .min(3, 'O nome deve ter no mínimo 3 caracteres')
-      .max(100, 'Nome muito longo'),
+    name: z.string().min(3, 'O nome deve ter no mínimo 3 caracteres').max(100, 'Nome muito longo'),
     email: z.string().min(1, 'O e-mail é obrigatório').email('E-mail inválido'),
     password: z
       .string()
@@ -135,7 +132,9 @@ export const Register: React.FC = () => {
             <div className="mt-1.5 p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-800/60 border border-[var(--border-color)] text-[11px] text-[var(--text-muted)] flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-[#FF5C5C] shrink-0 mt-0.5" />
               <span>
-                A senha deve ter no mínimo <strong>10 caracteres</strong>, contendo <strong>maiúscula</strong>, <strong>minúscula</strong>, <strong>número</strong> e <strong>caractere especial (!@#$)</strong>.
+                A senha deve ter no mínimo <strong>10 caracteres</strong>, contendo{' '}
+                <strong>maiúscula</strong>, <strong>minúscula</strong>, <strong>número</strong> e{' '}
+                <strong>caractere especial (!@#$)</strong>.
               </span>
             </div>
           </div>
